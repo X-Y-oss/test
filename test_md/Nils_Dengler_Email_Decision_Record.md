@@ -14,6 +14,14 @@
 - After proof of concept, mild clutter can be added in the grasping process: source object surrounded by 1–2 other objects.
 - This makes view acquisition more challenging.
 
+## 2026-07-10 – Visual NBV scope and camera setup
+- Nils confirmed that the staged visual scope makes sense.
+- The simulation currently uses an eye-in-hand RGB-D camera.
+- The camera setup can be extended if needed.
+- Proposal implication:
+  - Start visual evidence acquisition with eye-in-hand NBV around the source object / grasping scene under mild clutter.
+  - Treat target-region / support-geometry view acquisition as a follow-up or optional extension.
+
 ## Proposal implications
 - Add a simulation setup section.
 - Treat Franka adaptation as technical prerequisite, not main contribution.
