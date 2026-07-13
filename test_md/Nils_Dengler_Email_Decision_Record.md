@@ -21,6 +21,21 @@
 - Proposal implication:
   - Start visual evidence acquisition with eye-in-hand NBV around the source object / grasping scene under mild clutter.
   - Treat target-region / support-geometry view acquisition as a follow-up or optional extension.
+  - 
+## 2026-07-13 – Proposal feedback and first implementation benchmark
+- Nils said the proposal looks very good so far.
+- The timeline looks doable, depending on work effort.
+- Section 3.4 / the interactive decision logic should be treated as the main contribution.
+- The thesis and potential paper framing should center around this decision layer.
+- Nils will try to provide the simulation code.
+- First benchmark before thesis registration:
+  - implement/adapt Franka in Isaac Sim,
+  - get the baseline pick-and-place pipeline running.
+- Once this works, thesis registration can be discussed.
+- Proposal implication:
+  - Reframe the thesis around the interactive placeability decision layer.
+  - Treat visual NBV and physical investigation as supporting evidence-acquisition actions.
+  - Treat Franka + baseline setup as the first engineering milestone, not the scientific contribution.
 
 ## Proposal implications
 - Add a simulation setup section.
