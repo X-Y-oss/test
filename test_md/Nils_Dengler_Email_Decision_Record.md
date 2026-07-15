@@ -63,6 +63,25 @@
   - get the existing baseline running in Isaac Sim.
 - Once the Franka + baseline benchmark works, thesis registration can be discussed.
 
+## 2026-07-15 – GitLab access and repository orientation
+- Access to three repositories was confirmed:
+  - `UniP`
+  - `IsaacSim_5.1.0_ur5e`
+  - `isaacsim_5.1.0_devcontainer`
+- Nils confirmed that the base code is `UniP`.
+- Main file that he executed for the experiments: src/placeability_scoring/placeability_scoring/UP4_Pipeline_curobo.py
+- The Isaac Sim / devcontainer repositories should be used to understand the simulation and environment setup.
+- There is currently no documentation for the codebase.
+  - Nils said another student plans to add documentation in the next few weeks.
+  - In the meantime, Yuhang should start by getting familiar with the code and Isaac Sim.
+- Nils said to let him know if there are any major blockers.
+- Immediate next steps:
+  - Start code orientation from `UniP`.
+  - Inspect repository structure, scripts, configs, requirements, and possible entry points.
+  - Check `isaacsim_5.1.0_devcontainer` for environment setup.
+  - Check `IsaacSim_5.1.0_ur5e` for the existing Isaac Sim robot setup.
+  - Prepare a personal code-orientation note before asking detailed technical questions.
+
 ## Proposal implications
 - Add a simulation setup section.
 - Treat Franka adaptation as technical prerequisite, not main contribution.
