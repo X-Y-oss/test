@@ -100,4 +100,12 @@ https://gitlab.pearl.informatik.tu-darmstadt.de/dashboard/projects
 cd ~
 tar -czf thesis_setup_check.tar.gz thesis_setup_check
 ls -lh thesis_setup_check.tar.gz
-
+--------------------------------------------------------------------------------
+ssh-keygen -t ed25519 -C "yuhang.xia@stud.tu-darmstadt.de"
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519
+clip < ~/.ssh/id_ed25519.pub
+ssh -T git@gitlab.pearl.infomatik.tu-darmstadt.de
+git config --global user.name "Yuhang Xia"
+git config --global user.email "yuhang.xia@stud.tu-darmstadt.de"
+git config --global --list
