@@ -29,7 +29,7 @@ set -Eeuo pipefail
 SCRIPT_NAME="$(basename "$0")"
 
 ISAAC_ROS_WS_REPO="${ISAAC_ROS_WS_REPO:-https://github.com/isaac-sim/IsaacSim-ros_workspaces.git}"
-ISAAC_ROS_WS_REVISION="${ISAAC_ROS_WS_REVISION:-v5.1.0}"
+ISAAC_ROS_REVISION="${ISAAC_ROS_REVISION:-IsaacSim-5.1.0}"
 ISAAC_ROS_WS_ROOT="${ISAAC_ROS_WS_ROOT:-/workspace/external/IsaacSim-ros_workspaces}"
 
 ROS_DISTRO="${ROS_DISTRO_TARGET:-jazzy}"
@@ -60,7 +60,7 @@ on_error() {
     printf '\n[%s] ERROR: command failed at line %s (exit code %s)\n' \
         "$SCRIPT_NAME" "$line_no" "$rc" >&2
     printf '[%s] ISAAC_ROS_WS_ROOT=%s\n' "$SCRIPT_NAME" "$ISAAC_ROS_WS_ROOT" >&2
-    printf '[%s] ISAAC_ROS_WS_REVISION=%s\n' "$SCRIPT_NAME" "$ISAAC_ROS_WS_REVISION" >&2
+    printf '[%s] ISAAC_ROS_REVISION=%s\n' "$SCRIPT_NAME" "$ISAAC_ROS_REVISION" >&2
     exit "$rc"
 }
 
@@ -117,8 +117,8 @@ ensure_source() {
     git -C "$ISAAC_ROS_WS_ROOT" fetch --tags --prune origin
 
     if ! git -C "$ISAAC_ROS_WS_ROOT" rev-parse --verify \
-        "${ISAAC_ROS_WS_REVISION}^{commit}" >/dev/null 2>&1; then
-        fail "Pinned Isaac ROS workspace revision cannot be resolved: ${ISAAC_ROS_WS_REVISION}"
+        "${ISAAC_ROS_REVISION}^{commit}" >/dev/null 2>&1; then
+        fail "Pinned Isaac ROS workspace revision cannot be resolved: ${ISAAC_ROS_REVISION}"
     fi
 }
 
@@ -129,7 +129,7 @@ current_checkout_matches() {
     local current expected
     current="$(git -C "$ISAAC_ROS_WS_ROOT" rev-parse HEAD 2>/dev/null || true)"
     expected="$(git -C "$ISAAC_ROS_WS_ROOT" rev-parse \
-        "${ISAAC_ROS_WS_REVISION}^{commit}" 2>/dev/null || true)"
+        "${ISAAC_ROS_REVISION}^{commit}" 2>/dev/null || true)"
 
     [[ -n "$current" && -n "$expected" && "$current" == "$expected" ]]
 }
@@ -137,7 +137,7 @@ current_checkout_matches() {
 
 checkout_pinned_revision() {
     if current_checkout_matches; then
-        log "Pinned Isaac ROS workspace revision already checked out: $ISAAC_ROS_WS_REVISION"
+        log "Pinned Isaac ROS workspace revision already checked out: $ISAAC_ROS_REVISION"
         return
     fi
 
@@ -145,8 +145,8 @@ checkout_pinned_revision() {
         fail "Isaac ROS workspace source has local modifications; refusing to overwrite."
     fi
 
-    log "Checking out pinned revision: $ISAAC_ROS_WS_REVISION"
-    git -C "$ISAAC_ROS_WS_ROOT" checkout --detach "$ISAAC_ROS_WS_REVISION"
+    log "Checking out pinned revision: $ISAAC_ROS_REVISION"
+    git -C "$ISAAC_ROS_WS_ROOT" checkout --detach "$ISAAC_ROS_REVISION"
 
     log "Updating repository submodules..."
     git -C "$ISAAC_ROS_WS_ROOT" submodule update --init --recursive
@@ -264,7 +264,7 @@ print_summary() {
 
     log "ROS Jazzy / Python 3.11 workspace ready."
     log "Repository    : $ISAAC_ROS_WS_REPO"
-    log "Revision      : $ISAAC_ROS_WS_REVISION"
+    log "Revision      : $ISAAC_ROS_REVISION"
     log "Commit        : $commit"
     log "Source        : $ISAAC_ROS_WS_ROOT"
     log "Base setup    : $ROS311_BASE_SETUP"
