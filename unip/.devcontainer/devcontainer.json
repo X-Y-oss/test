@@ -18,12 +18,9 @@
         "-e",
         "ACCEPT_EULA=Y",
         "-e",
-        "PRIVACY_CONSENT=Y",
-        "-e",
-        "DISPLAY=${localEnv:DISPLAY}"
+        "PRIVACY_CONSENT=Y"
     ],
     "containerEnv": {
-        "DISPLAY": "unix:0",
         "ROS_LOCALHOST_ONLY": "0",
         "ROS_DOMAIN_ID": "42",
         "WORKSPACE_ROOT": "/workspace",
@@ -36,8 +33,6 @@
         "CUDA_HOME": "/usr/local/cuda-12.8"
     },
     "mounts": [
-        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
-        "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached",
         "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
         "source=unip-external,target=/workspace/external,type=volume",
         "source=unip-isaac-kit-cache,target=/isaac-sim/kit/cache,type=volume",
