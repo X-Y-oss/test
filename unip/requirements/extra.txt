@@ -1,0 +1,19 @@
+# UniP non-core / legacy Python dependencies
+#
+# These packages were present in the legacy environment or requirements,
+# but the current full Python-source import audit did not prove that they are
+# required by the main UniP baseline runtime.
+#
+# Keep this file as an evidence-preserving holding area until runtime validation
+# confirms whether each package is still needed.
+#
+# Do NOT install this file by default in the clean baseline environment.
+
+pillow
+plotly
+scikit-image
+scikit-learn
+trimesh
+numpy-quaternion
+PyOpenGL
+mcubes

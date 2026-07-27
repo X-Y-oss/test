@@ -1,0 +1,24 @@
+# UniP baseline Python dependencies
+#
+# Scope:
+# - Confirmed by static import audit of the current UniP repository.
+# - Only packages suitable for normal pip ownership are listed here.
+#
+# Intentionally excluded:
+# - torch: version must be chosen together with CUDA/cuRobo compatibility.
+# - curobo: installed from the pinned BennoWingender/curobo source revision.
+# - cv2/opencv: ownership must first be checked against Isaac/ROS system OpenCV.
+# - ROS Python packages: owned by ROS/package.xml/rosdep.
+# - trimesh, numpy-quaternion: present in the legacy requirements but not found
+#   in the current Python-source import audit.
+
+numpy
+scipy
+open3d
+matplotlib
+pandas
+tqdm
+klampt
+pyfqmr
+shapely
+toppra

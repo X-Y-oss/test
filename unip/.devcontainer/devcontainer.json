@@ -1,0 +1,70 @@
+{
+    "name": "UniP - Isaac Sim 5.1",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+    "runArgs": [
+        "--entrypoint",
+        "bash",
+        "--runtime=nvidia",
+        "--gpus",
+        "all",
+        "--net=host",
+        "--ipc=host",
+        "--pid=host",
+        "-e",
+        "ACCEPT_EULA=Y",
+        "-e",
+        "PRIVACY_CONSENT=Y",
+        "-e",
+        "DISPLAY=${localEnv:DISPLAY}"
+    ],
+    "containerEnv": {
+        "DISPLAY": "unix:0",
+        "ROS_LOCALHOST_ONLY": "0",
+        "ROS_DOMAIN_ID": "42",
+        "WORKSPACE_ROOT": "/workspace",
+        "UNIP_SRC": "/workspace/src",
+        "GPD_ROOT": "/workspace/external/gpd",
+        "CUROBO_ROOT": "/workspace/external/curobo",
+        "PYTHON_BIN": "/isaac-sim/python.sh",
+        "ISAAC_ROS_WS_ROOT": "/workspace/external/IsaacSim-ros_workspaces",
+        "ROS_DISTRO_TARGET": "jazzy",
+        "CUDA_HOME": "/usr/local/cuda-12.8"
+    },
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+        "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached",
+        "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
+        "source=unip-external,target=/workspace/external,type=volume",
+        "source=unip-isaac-kit-cache,target=/isaac-sim/kit/cache,type=volume",
+        "source=unip-isaac-ov-cache,target=/root/.cache/ov,type=volume",
+        "source=unip-isaac-pip-cache,target=/root/.cache/pip,type=volume",
+        "source=unip-nvidia-gl-cache,target=/root/.cache/nvidia/GLCache,type=volume",
+        "source=unip-nvidia-compute-cache,target=/root/.nv/ComputeCache,type=volume",
+        "source=unip-isaac-logs,target=/root/.nvidia-omniverse/logs,type=volume",
+        "source=unip-isaac-data,target=/root/.local/share/ov/data,type=volume",
+        "source=unip-isaac-documents,target=/root/Documents,type=volume"
+    ],
+    "postCreateCommand": "bash .devcontainer/postCreate.sh",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-vscode.cpptools",
+                "ms-vscode.cmake-tools",
+                "ms-iot.vscode-ros",
+                "redhat.vscode-xml",
+                "eamodio.gitlens"
+            ],
+            "settings": {
+                "python.defaultInterpreterPath": "/isaac-sim/python.sh",
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    },
+    "remoteUser": "root"
+}
