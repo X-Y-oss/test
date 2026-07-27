@@ -1,0 +1,8 @@
+========================================================================
+UniP CUDA Toolkit Installation
+========================================================================
+[install_cuda_toolkit.sh] SKIP: compatible CUDA 12.8 nvcc already available.
+[install_cuda_toolkit.sh] CUDA toolkit verification:
+  Cuda compilation tools, release 12.8, V12.8.93
+  Build cuda_12.8.r12.8/compiler.35583870_0
+[install_cuda_toolkit.sh] PASS: CUDA 12.8 development toolkit is ready.

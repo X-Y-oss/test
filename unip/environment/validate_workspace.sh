@@ -135,9 +135,16 @@ PY
 
 native_gpd() {
     section "W6 — Native GPD linkage"
-    if ldconfig -p 2>/dev/null | grep -q 'libgpd\.so'; then
+    libgpd_entry="$(
+        ldconfig -p 2>/dev/null \
+            | grep 'libgpd\.so' \
+            | head -n 1 \
+            || true
+    )"
+
+    if [[ -n "$libgpd_entry" ]]; then
         pass "libgpd is discoverable."
-        ldconfig -p 2>/dev/null | grep 'libgpd\.so' | sed 's/^/        /'
+        printf '        %s\n' "$libgpd_entry"
     else
         fail "libgpd is not discoverable."
     fi

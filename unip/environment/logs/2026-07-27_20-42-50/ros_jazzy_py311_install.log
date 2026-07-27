@@ -1,0 +1,35 @@
+[install_ros_jazzy_py311.sh] ============================================================
+[install_ros_jazzy_py311.sh] Isaac Sim 5.1 ROS Jazzy / Python 3.11 installation
+[install_ros_jazzy_py311.sh] ============================================================
+[install_ros_jazzy_py311.sh] Python runtime : /isaac-sim/python.sh
+[install_ros_jazzy_py311.sh] Python version : 3.11.13
+[install_ros_jazzy_py311.sh] Existing Isaac Sim ROS workspace checkout found.
+[install_ros_jazzy_py311.sh] Fetching release tags...
+[install_ros_jazzy_py311.sh] Pinned Isaac ROS workspace revision already checked out: IsaacSim-5.1.0
+[install_ros_jazzy_py311.sh] Existing build artifacts found; skipping rebuild.
+[install_ros_jazzy_py311.sh] Verifying generated ROS workspace artifacts...
+[install_ros_jazzy_py311.sh] Validating rclpy with Isaac Python...
+Traceback (most recent call last):
+  File "<stdin>", line 3, in <module>
+  File "/workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/rclpy/__init__.py", line 49, in <module>
+    from rclpy.signals import install_signal_handlers
+  File "/workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/rclpy/signals.py", line 15, in <module>
+    from rclpy.exceptions import InvalidHandle
+  File "/workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/rclpy/exceptions.py", line 16, in <module>
+    from rclpy.impl.implementation_singleton import rclpy_implementation as _rclpy
+  File "/workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/rclpy/impl/implementation_singleton.py", line 32, in <module>
+    rclpy_implementation = import_c_library('._rclpy_pybind11', package)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/rpyutils/import_c_library.py", line 39, in import_c_library
+    return importlib.import_module(name, package=package)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/isaac-sim/kit/python/lib/python3.11/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ImportError: liblttng-ust.so.1: cannot open shared object file: No such file or directory
+The C extension '/workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/rclpy/_rclpy_pybind11.cpython-311-x86_64-linux-gnu.so' failed to be imported while being present on the system. Please refer to 'https://docs.ros.org/en/jazzy/How-To-Guides/Installation-Troubleshooting.html#import-failing-even-with-library-present-on-the-system' for possible solutions
+There was an error running python
+
+[install_ros_jazzy_py311.sh] ERROR: command failed at line 221 (exit code 1)
+[install_ros_jazzy_py311.sh] ISAAC_ROS_WS_ROOT=/workspace/external/IsaacSim-ros_workspaces
+[install_ros_jazzy_py311.sh] ISAAC_ROS_REVISION=IsaacSim-5.1.0

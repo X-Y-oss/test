@@ -1,0 +1,38 @@
+========================================================================
+UniP Environment Setup Report
+========================================================================
+Run ID          : 2026-07-27_21-32-09
+Repository root : /workspace
+Workspace root  : /workspace
+Python runtime  : /isaac-sim/python.sh
+ROS target      : jazzy
+Validate only   : 0
+With runtime    : 0
+GPD startup     : 0
+
+STAGE                                    RESULT     CLASS            LOG
+---------------------------------------- ---------- ---------------- ---
+Preflight                                PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/preflight.log
+Environment pre-check                    PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/environment_pre-check.log
+Python core install                      PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/python_core_install.log
+ROS Jazzy Py3.11 install                 PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/ros_jazzy_py311_install.log
+UniP ROS311 overlay install              PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/unip_ros311_overlay_install.log
+Native GPD install                       PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/native_gpd_install.log
+UniP core ROS311 build                   PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/unip_core_ros311_build.log
+CUDA Toolkit 12.8 install                PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/cuda_toolkit_128_install.log
+ROS Jazzy Py3.11 validation              PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/ros_jazzy_py311_validation.log
+UniP ROS311 overlay validation           PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/unip_ros311_overlay_validation.log
+Torch/CUDA pre-cuRobo gate               PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/torchcuda_pre-curobo_gate.log
+cuRobo install                           PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/curobo_install.log
+Torch/CUDA post-cuRobo gate              PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/torchcuda_post-curobo_gate.log
+cuRobo validation                        PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/curobo_validation.log
+GPD validation                           PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/gpd_validation.log
+ROS311 workspace validation              PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/ros311_workspace_validation.log
+Isaac ROS interface validation           SKIP       -                /workspace/environment/logs/2026-07-27_21-32-09/isaac_ros_interface_validation.log
+Environment post-check                   PASS       -                /workspace/environment/logs/2026-07-27_21-32-09/environment_post-check.log
+
+OVERALL RESULT      : PASS
+Runtime integration : NOT REQUESTED
+
+Log directory: /workspace/environment/logs/2026-07-27_21-32-09
+========================================================================

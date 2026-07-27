@@ -80,10 +80,19 @@ check_source_and_api() {
 
     set +e
     "$PYTHON_BIN" - <<'PY'
+import warp
+import yourdfpy
 import curobo
-from curobo.types.robot import JointState
-from curobo.wrap.reacher.motion_gen import MotionGen, MotionGenConfig, MotionGenPlanConfig
 
+from curobo.types.robot import JointState
+from curobo.wrap.reacher.motion_gen import (
+    MotionGen,
+    MotionGenConfig,
+    MotionGenPlanConfig,
+)
+
+print("  import warp                PASS")
+print("  import yourdfpy            PASS")
 print("  import curobo              PASS")
 print("  JointState                 PASS")
 print("  MotionGen                  PASS")

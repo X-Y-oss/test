@@ -1,0 +1,51 @@
+========================================================================
+UniP Torch / CUDA Compatibility Gate
+========================================================================
+
+============================================================
+T1 — Isaac Python / Torch
+============================================================
+  PYTHON_BIN          : /isaac-sim/python.sh
+  Python version      : 3.11.13
+  sys.executable      : /isaac-sim/kit/python/bin/python3
+  Torch version       : 2.7.0+cu128
+  Torch CUDA build    : 12.8
+  CXX11 ABI           : True
+  [PASS] Isaac Python 3.11 and Torch import are valid.
+
+============================================================
+T2 — Torch CUDA Runtime / GPU
+============================================================
+  CUDA available      : True
+  Device count        : 1
+  GPU                 : NVIDIA GeForce RTX 3060 Laptop GPU
+  Compute capability  : 8.6
+  Recommended arch    : 8.6
+  [PASS] Torch can access the CUDA GPU.
+
+============================================================
+T3 — CUDA Toolkit / nvcc
+============================================================
+  [PASS] nvcc is available.
+  nvcc path           : /usr/local/cuda-12.8/bin/nvcc
+  Cuda compilation tools, release 12.8, V12.8.93
+  Build cuda_12.8.r12.8/compiler.35583870_0
+  CUDA_HOME(shell)    : /usr/local/cuda-12.8
+
+============================================================
+T4 — Torch CUDA Build Contract
+============================================================
+  torch.version.cuda  : 12.8
+  CUDA_HOME(torch)    : /usr/local/cuda-12.8
+  CXX11 ABI           : True
+  GPU arch            : 8.6
+  nvcc                : Build cuda_12.8.r12.8/compiler.35583870_0
+  [PASS] Torch exposes CUDA build metadata and CUDA_HOME.
+
+============================================================
+Torch / CUDA Gate Summary
+============================================================
+  Failures : 0
+  Warnings : 0
+
+RESULT: PASS
