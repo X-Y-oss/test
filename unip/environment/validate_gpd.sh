@@ -47,6 +47,9 @@ GPD_CONFIG_FILE="${GPD_CONFIG_FILE:-${GPD_ROOT}/cfg/ros_eigen_params.cfg}"
 GPD_EXECUTABLE="${GPD_EXECUTABLE:-}"
 GPD_STARTUP_TIMEOUT="${GPD_STARTUP_TIMEOUT:-8}"
 
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspace}"
+PYTHON_BIN="${PYTHON_BIN:-/isaac-sim/python.sh}"
+
 RUN_STARTUP=0
 FAIL_COUNT=0
 WARN_COUNT=0
@@ -103,14 +106,43 @@ parse_args() {
 }
 
 source_ros_workspace_if_available() {
-    # Source an already-built UniP workspace if present.
-    if [[ -f "${WORKSPACE_ROOT}/install/setup.bash" ]]; then
-        # shellcheck disable=SC1091
-        source "${WORKSPACE_ROOT}/install/setup.bash"
-        pass "Sourced workspace install/setup.bash."
-    else
-        warn "Workspace install/setup.bash not found; ROS package discovery may be incomplete."
-    fi
+    local isaac_ros_ws_root
+    local ros311_base_setup
+    local ros311_isaac_setup
+    local unip_ros311_overlay_root
+    local unip_ros311_overlay_setup
+    local unip_core_setup
+
+    isaac_ros_ws_root="${ISAAC_ROS_WS_ROOT:-${WORKSPACE_ROOT}/external/IsaacSim-ros_workspaces}"
+    unip_ros311_overlay_root="${UNIP_ROS311_OVERLAY_ROOT:-${WORKSPACE_ROOT}/external/unip_ros311_ws}"
+
+    ros311_base_setup="${isaac_ros_ws_root}/build_ws/jazzy/jazzy_ws/install/local_setup.bash"
+    ros311_isaac_setup="${isaac_ros_ws_root}/build_ws/jazzy/isaac_sim_ros_ws/install/local_setup.bash"
+    unip_ros311_overlay_setup="${unip_ros311_overlay_root}/install/local_setup.bash"
+    unip_core_setup="${WORKSPACE_ROOT}/install/local_setup.bash"
+
+    local setups=(
+        "$ros311_base_setup"
+        "$ros311_isaac_setup"
+        "$unip_ros311_overlay_setup"
+        "$unip_core_setup"
+    )
+
+    local setup
+
+    set +u
+
+    for setup in "${setups[@]}"; do
+        if [[ -f "$setup" ]]; then
+            # shellcheck disable=SC1090
+            source "$setup"
+            pass "Sourced: $setup"
+        else
+            warn "ROS setup not found: $setup"
+        fi
+    done
+
+    set -u
 }
 
 libgpd_path() {
@@ -225,49 +257,71 @@ discover_gpd_executable() {
     return 1
 }
 
+check_ros_package() {
+    local package_name="$1"
+
+    if "$PYTHON_BIN" - "$package_name" <<'PY'
+import sys
+from ament_index_python.packages import get_package_prefix, PackageNotFoundError
+
+pkg = sys.argv[1]
+
+try:
+    print(get_package_prefix(pkg))
+except PackageNotFoundError:
+    raise SystemExit(1)
+PY
+    then
+        pass "ROS package discoverable: ${package_name}"
+        return 0
+    fi
+
+    fail "ROS package not discoverable: ${package_name}"
+    return 1
+}
+
 check_ros_wrapper() {
     section "B2 — ROS Wrapper"
 
-    if ! command -v ros2 >/dev/null 2>&1; then
-        fail "ros2 CLI is not available."
-        return
-    fi
+    check_ros_package gpd_ros_messages
+    check_ros_package gpd_ros || return
 
-    pass "ros2 CLI is available."
+    local gpd_exec_dir
+    gpd_exec_dir="${WORKSPACE_ROOT}/install/lib/gpd_ros"
 
-    if ros2 pkg prefix gpd_ros_messages >/dev/null 2>&1; then
-        pass "ROS package discoverable: gpd_ros_messages"
+    if [[ -d "$gpd_exec_dir" ]]; then
+        local executables
+        executables="$(
+            find "$gpd_exec_dir" \
+                -maxdepth 1 \
+                -type f \
+                -executable \
+                -printf '%f\n' \
+                2>/dev/null || true
+        )"
+
+        if [[ -n "$executables" ]]; then
+            pass "gpd_ros exposes executable(s):"
+            printf '%s\n' "$executables" | sed 's/^/         /'
+
+            GPD_EXECUTABLE="$(
+                printf '%s\n' "$executables" \
+                    | grep -E 'grasp.*detect|gpd.*node|grasp.*node' \
+                    | head -n 1 || true
+            )"
+
+            if [[ -z "$GPD_EXECUTABLE" ]]; then
+                GPD_EXECUTABLE="$(
+                    printf '%s\n' "$executables" | head -n 1
+                )"
+            fi
+
+            pass "Selected gpd_ros executable: ${GPD_EXECUTABLE}"
+        else
+            fail "No executable found in ${gpd_exec_dir}"
+        fi
     else
-        fail "ROS package not discoverable: gpd_ros_messages"
-    fi
-
-    if ros2 pkg prefix gpd_ros >/dev/null 2>&1; then
-        pass "ROS package discoverable: gpd_ros"
-    else
-        fail "ROS package not discoverable: gpd_ros"
-        return
-    fi
-
-    local executables
-    executables="$(ros2 pkg executables gpd_ros 2>/dev/null || true)"
-
-    if [[ -n "$executables" ]]; then
-        pass "gpd_ros exposes ROS executable(s):"
-        printf '%s\n' "$executables" | sed 's/^/         /'
-    else
-        fail "No ROS executable found for gpd_ros."
-        return
-    fi
-
-    local executable
-    executable="$(discover_gpd_executable || true)"
-
-    if [[ -n "$executable" ]]; then
-        pass "Selected gpd_ros executable: $executable"
-        GPD_EXECUTABLE="$executable"
-    else
-        warn "Could not select a unique gpd_ros executable automatically."
-        warn "Set GPD_EXECUTABLE explicitly before using --startup."
+        fail "gpd_ros executable directory not found: ${gpd_exec_dir}"
     fi
 }
 

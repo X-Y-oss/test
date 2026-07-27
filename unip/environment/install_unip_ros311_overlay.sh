@@ -106,9 +106,12 @@ RUN rosinstall_generator \
         sensor_msgs_py \
         tf2_ros \
         tf2_ros_py \
+        tf2_eigen \
+        tf2_geometry_msgs \
         cv_bridge \
         control_msgs \
         moveit_msgs \
+        pcl_conversions \
         launch \
         launch_ros \
         --deps \
@@ -137,7 +140,9 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         ca-certificates \
         wget \
-        libopencv-dev && \
+        libopencv-dev \
+        libpcl-dev \
+        libeigen3-dev && \
     rm -rf /var/lib/apt/lists/* && \
     cd /tmp && \
     wget -q \
@@ -194,8 +199,7 @@ RUN source /workspace/jazzy_ws/install/setup.bash && \
             -DPYTHON_INCLUDE_DIR=/usr/include/python3.11 \
             -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.11.so \
             -DBoost_NO_BOOST_CMAKE=ON \
-            -DBoost_INCLUDE_DIR=/usr/include \
-            -DBoost_LIBRARY_DIR=/usr/local/lib
+            -DCMAKE_LIBRARY_PATH=/usr/local/lib
 
 
 # -----------------------------------------------------------------------------
@@ -211,9 +215,12 @@ packages = (
     "sensor_msgs_py",
     "tf2_ros",
     "tf2_ros_py",
+    "tf2_eigen",
+    "tf2_geometry_msgs",
     "cv_bridge",
     "control_msgs",
     "moveit_msgs",
+    "pcl_conversions",
 )
 
 for pkg in packages:
