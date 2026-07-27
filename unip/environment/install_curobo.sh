@@ -5,7 +5,8 @@ SCRIPT_NAME="$(basename "$0")"
 PYTHON_BIN="${PYTHON_BIN:-/isaac-sim/python.sh}"
 CUROBO_REPO="${CUROBO_REPO:-https://github.com/BennoWingender/curobo.git}"
 CUROBO_ROOT="${CUROBO_ROOT:-/workspace/external/curobo}"
-CUROBO_COMMIT="${CUROBO_COMMIT:-}"
+#CUROBO_COMMIT="${CUROBO_COMMIT:-}"
+CUROBO_COMMIT="${CUROBO_COMMIT:-d64c4b005459db10c5dd867d8b30a87d5bda9bdb}"
 
 log() { printf '[%s] %s\n' "$SCRIPT_NAME" "$*"; }
 fail() { printf '[%s] ERROR: %s\n' "$SCRIPT_NAME" "$*" >&2; exit 1; }
@@ -78,7 +79,11 @@ main() {
     fi
 
     configure_cuda_arch
-    "$PYTHON_BIN" -m pip install -e "$CUROBO_ROOT" --no-build-isolation
+    #"$PYTHON_BIN" -m pip install -e "$CUROBO_ROOT" --no-build-isolation
+    "$PYTHON_BIN" -m pip install \
+        --no-deps \
+        --no-build-isolation \
+        -e "$CUROBO_ROOT"
 
     legacy_api_ok || fail "Legacy cuRobo API import failed after installation."
     log "PASS: cuRobo installed with Isaac Python."

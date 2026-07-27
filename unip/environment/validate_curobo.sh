@@ -6,6 +6,7 @@ PYTHON_BIN="${PYTHON_BIN:-/isaac-sim/python.sh}"
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspace}"
 CUROBO_ROOT="${CUROBO_ROOT:-${WORKSPACE_ROOT}/external/curobo}"
 CUROBO_COMMIT="${CUROBO_COMMIT:-}"
+PYTHON_BIN="${PYTHON_BIN:-/isaac-sim/python.sh}"
 
 FAIL_COUNT=0
 WARN_COUNT=0
