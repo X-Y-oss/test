@@ -23,6 +23,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         pkg-config \
         git \
         git-lfs \
+        liblttng-ust1t64 \
         curl \
         wget \
         ca-certificates \

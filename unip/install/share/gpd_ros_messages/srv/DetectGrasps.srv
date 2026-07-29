@@ -1,0 +1,3 @@
+gpd_ros_messages/CloudIndexed cloud_indexed
+---
+gpd_ros_messages/GraspConfigList grasp_configs

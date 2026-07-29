@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>placeability_scoring</name>
+  <version>0.0.0</version>
+  <description>UniP placeability scoring, reconstruction, grasping, and CuRobo execution pipeline.</description>
+  <maintainer email="s6bewing@uni-bonn.de">wingende</maintainer>
+  <license>MIT</license>
+
+  <!-- Python package build system -->
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- Core ROS Python runtime dependencies observed in the baseline code -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>sensor_msgs_py</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>builtin_interfaces</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+
+  <!-- Robot trajectory/action interfaces used by UR5e_Interface_curobo.py -->
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+
+  <!-- RobotTrajectory is used as a message type; this does not imply that the
+       full MoveIt planning stack is part of the verified planning path. -->
+  <exec_depend>moveit_msgs</exec_depend>
+
+  <!-- Local workspace dependencies -->
+  <exec_depend>gpd_ros</exec_depend>
+  <exec_depend>gpd_ros_messages</exec_depend>
+
+  <!-- Tests -->
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

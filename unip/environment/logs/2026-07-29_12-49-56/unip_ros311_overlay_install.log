@@ -1,0 +1,47 @@
+[install_unip_ros311_overlay.sh] Checking Isaac Python...
+Isaac Python: 3.11.13
+[install_unip_ros311_overlay.sh] Building ROS311 overlay image...
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  6.656kB
+Step 1/10 : ARG BASE_IMAGE=isaac_sim_ros:ubuntu_24_jazzy
+Step 2/10 : FROM ${BASE_IMAGE}
+ ---> 270104c818e0
+Step 3/10 : SHELL ["/bin/bash", "-lc"]
+ ---> Using cache
+ ---> 048512e9adcb
+Step 4/10 : WORKDIR /workspace
+ ---> Using cache
+ ---> 965e95cffc7a
+Step 5/10 : RUN rm -rf /workspace/unip_ros311_ws &&     mkdir -p /workspace/unip_ros311_ws/src
+ ---> Using cache
+ ---> e7744585abc4
+Step 6/10 : RUN rosinstall_generator         sensor_msgs_py         tf2_ros         tf2_ros_py         tf2_eigen         tf2_geometry_msgs         cv_bridge         control_msgs         moveit_msgs         pcl_conversions         launch         launch_ros         --deps         --rosdistro jazzy         --exclude-path /workspace/jazzy_ws/src         > /workspace/unip_ros311_ws/unip_overlay.rosinstall &&     echo "===== UniP ROS311 source closure =====" &&     grep "local-name:"         /workspace/unip_ros311_ws/unip_overlay.rosinstall &&     echo "===== count =====" &&     grep -c "local-name:"         /workspace/unip_ros311_ws/unip_overlay.rosinstall &&     vcs import         /workspace/unip_ros311_ws/src         < /workspace/unip_ros311_ws/unip_overlay.rosinstall
+ ---> Using cache
+ ---> aa7ac4e52ec6
+Step 7/10 : RUN apt-get update &&     apt-get install -y --no-install-recommends         ca-certificates         wget         libopencv-dev         libpcl-dev         libeigen3-dev &&     rm -rf /var/lib/apt/lists/* &&     cd /tmp &&     wget -q         https://archives.boost.io/release/1.83.0/source/boost_1_83_0.tar.gz &&     tar -xzf boost_1_83_0.tar.gz &&     cd boost_1_83_0 &&     ./bootstrap.sh         --with-libraries=python         --with-python=/usr/bin/python3.11 &&     echo "===== Boost project-config.jam =====" &&     cat project-config.jam &&     echo "===== Building Boost.Python 3.11 only =====" &&     ./b2         --debug-configuration         libs/python/build//boost_python         link=shared         threading=multi         variant=release         -j"$(nproc)" &&     echo "===== Installing Boost.Python 3.11 =====" &&     BOOST_PYTHON_LIB="$(find bin.v2/libs/python/build         -type f         -name 'libboost_python311.so.1.83.0'         -print         -quit)" &&     test -n "$BOOST_PYTHON_LIB" &&     echo "Found: $BOOST_PYTHON_LIB" &&     mkdir -p /usr/local/lib &&     cp -av "$BOOST_PYTHON_LIB"         /usr/local/lib/libboost_python311.so.1.83.0 &&     ln -sf         libboost_python311.so.1.83.0         /usr/local/lib/libboost_python311.so &&     ldconfig &&     echo "===== Installed Boost.Python libraries =====" &&     ls -l /usr/local/lib/libboost_python311*
+ ---> Using cache
+ ---> 8a1d9d220e44
+Step 8/10 : ENV LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
+ ---> Using cache
+ ---> d7d6ac0d206a
+Step 9/10 : RUN source /workspace/jazzy_ws/install/setup.bash &&     cd /workspace/unip_ros311_ws &&     colcon build         --merge-install         --cmake-args             -DPython3_EXECUTABLE=/usr/bin/python3.11             -DPYTHON_EXECUTABLE=/usr/bin/python3.11             -DPYTHON_INCLUDE_DIR=/usr/include/python3.11             -DPYTHON_LIBRARY=/usr/lib/x86_64-linux-gnu/libpython3.11.so             -DBoost_NO_BOOST_CMAKE=ON             -DCMAKE_LIBRARY_PATH=/usr/local/lib
+ ---> Using cache
+ ---> f209c70924f5
+Step 10/10 : RUN source /workspace/jazzy_ws/install/setup.bash &&     source /workspace/unip_ros311_ws/install/local_setup.bash &&     python3.11 - <<'PY'
+ ---> Using cache
+ ---> 8ee17503a7b0
+Successfully built 8ee17503a7b0
+Successfully tagged unip_ros311_overlay:jazzy_py311
+[install_unip_ros311_overlay.sh] Extracting overlay to: /workspace/external/unip_ros311_ws
+[install_unip_ros311_overlay.sh] Validating extracted overlay with Isaac Python...
+[PASS] sensor_msgs_py       /workspace/external/unip_ros311_ws/install
+[PASS] tf2_ros              /workspace/external/unip_ros311_ws/install
+[PASS] cv_bridge            /workspace/external/unip_ros311_ws/install
+[PASS] control_msgs         /workspace/external/unip_ros311_ws/install
+[PASS] moveit_msgs          /workspace/external/unip_ros311_ws/install
+Isaac Python overlay imports: PASS
+[install_unip_ros311_overlay.sh] PASS: UniP ROS Jazzy/Python-3.11 overlay prepared.
+[install_unip_ros311_overlay.sh] Overlay setup: /workspace/external/unip_ros311_ws/install/local_setup.bash

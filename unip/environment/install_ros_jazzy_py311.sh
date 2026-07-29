@@ -40,6 +40,9 @@ PYTHON_BIN="${PYTHON_BIN:-/isaac-sim/python.sh}"
 ROS311_BASE_SETUP="${ROS311_BASE_SETUP:-${ISAAC_ROS_WS_ROOT}/build_ws/${ROS_DISTRO}/${ROS_DISTRO}_ws/install/local_setup.bash}"
 ROS311_ISAAC_SETUP="${ROS311_ISAAC_SETUP:-${ISAAC_ROS_WS_ROOT}/build_ws/${ROS_DISTRO}/isaac_sim_ros_ws/install/local_setup.bash}"
 
+ROS2_REAL_BIN="${ROS2_REAL_BIN:-${ISAAC_ROS_WS_ROOT}/build_ws/${ROS_DISTRO}/${ROS_DISTRO}_ws/install/bin/ros2}"
+ROS2_WRAPPER="${ROS2_WRAPPER:-/usr/local/bin/ros2}"
+
 log() {
     printf '[%s] %s\n' "$SCRIPT_NAME" "$*"
 }
@@ -198,6 +201,52 @@ EOF
     popd >/dev/null
 }
 
+install_ros2_cli_runtime() {
+    log "Installing ROS 2 CLI Python dependencies..."
+
+    "$PYTHON_BIN" -m pip install \
+        --no-deps \
+        PyYAML \
+        argcomplete
+
+    [[ -f "$ROS2_REAL_BIN" ]] ||
+        fail "ROS 2 CLI entry point missing: $ROS2_REAL_BIN"
+
+    log "Creating ROS 2 CLI wrapper: $ROS2_WRAPPER"
+
+    cat > "$ROS2_WRAPPER" <<EOF
+#!/usr/bin/env bash
+set -Eeo pipefail
+
+JAZZY_SETUP="${ISAAC_ROS_WS_ROOT}/build_ws/${ROS_DISTRO}/${ROS_DISTRO}_ws/install/local_setup.bash"
+ISAAC_SETUP="${ISAAC_ROS_WS_ROOT}/build_ws/${ROS_DISTRO}/isaac_sim_ros_ws/install/local_setup.bash"
+UNIP_OVERLAY="/workspace/external/unip_ros311_ws/install/local_setup.bash"
+UNIP_CORE="/workspace/install/local_setup.bash"
+
+[[ -f "\$JAZZY_SETUP" ]] || {
+    echo "[ros2-wrapper] ERROR: missing ROS setup: \$JAZZY_SETUP" >&2
+    exit 1
+}
+
+set +u
+source "\$JAZZY_SETUP"
+[[ -f "\$ISAAC_SETUP" ]] && source "\$ISAAC_SETUP"
+[[ -f "\$UNIP_OVERLAY" ]] && source "\$UNIP_OVERLAY"
+[[ -f "\$UNIP_CORE" ]] && source "\$UNIP_CORE"
+set -u
+
+exec /isaac-sim/python.sh \
+  "$ROS2_REAL_BIN" \
+  "\$@"
+EOF
+
+    chmod 0755 "$ROS2_WRAPPER"
+
+    "$PYTHON_BIN" -c 'import yaml, argcomplete'
+    "$ROS2_WRAPPER" --help >/dev/null
+
+    log "ROS 2 CLI wrapper validation passed."
+}
 
 verify_workspace() {
     log "Verifying generated ROS workspace artifacts..."
@@ -286,6 +335,7 @@ main() {
     if already_ready; then
         log "Correct pinned revision and working Python-3.11 rclpy detected."
         log "SKIP: Isaac-compatible ROS workspace is already ready."
+        install_ros2_cli_runtime
         print_summary
         exit 0
     fi
@@ -297,6 +347,7 @@ main() {
     fi
 
     verify_workspace
+    install_ros2_cli_runtime
     print_summary
 
     log "PASS: Isaac-compatible ROS Jazzy/Python-3.11 workspace prepared."

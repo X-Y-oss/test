@@ -1,0 +1,100 @@
+========================================================================
+UniP ROS311 Workspace Validation
+========================================================================
+
+============================================================
+W1 — Source verified ROS311 stack
+============================================================
+  [PASS] Sourced: /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/local_setup.bash
+  [PASS] Sourced: /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/isaac_sim_ros_ws/install/local_setup.bash
+  [PASS] Sourced: /workspace/external/unip_ros311_ws/install/local_setup.bash
+  [PASS] Sourced: /workspace/install/local_setup.bash
+
+============================================================
+W2 — Runtime identity / contamination
+============================================================
+  Python: 3.11.13
+  Executable: /isaac-sim/kit/python/bin/python3
+  [PASS] Isaac Python 3.11 contract holds.
+  [PASS] No /opt/ros/jazzy prefix in AMENT_PREFIX_PATH.
+  [PASS] No Python 3.12 path detected in PYTHONPATH.
+  system colcon: /usr/bin/colcon
+  shebang      : #!/usr/bin/python3
+  [WARN] System colcon is informational only; do not use it for UniP core builds.
+
+============================================================
+W3 — Ament package discovery
+============================================================
+  [PASS] rclpy                    /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install
+  [PASS] rclcpp                   /workspace/external/unip_ros311_ws/install
+  [PASS] sensor_msgs              /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install
+  [PASS] sensor_msgs_py           /workspace/external/unip_ros311_ws/install
+  [PASS] tf2                      /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install
+  [PASS] tf2_ros                  /workspace/external/unip_ros311_ws/install
+  [PASS] tf2_ros_py               /workspace/external/unip_ros311_ws/install
+  [PASS] tf2_eigen                /workspace/external/unip_ros311_ws/install
+  [PASS] tf2_geometry_msgs        /workspace/external/unip_ros311_ws/install
+  [PASS] cv_bridge                /workspace/external/unip_ros311_ws/install
+  [PASS] control_msgs             /workspace/external/unip_ros311_ws/install
+  [PASS] trajectory_msgs          /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install
+  [PASS] moveit_msgs              /workspace/external/unip_ros311_ws/install
+  [PASS] pcl_conversions          /workspace/external/unip_ros311_ws/install
+  [PASS] gpd_ros_messages         /workspace/install
+  [PASS] gpd_ros                  /workspace/install
+  [PASS] generate_motion_msgs     /workspace/install
+  [PASS] placeability_scoring     /workspace/install
+  [PASS] All required ROS packages are discoverable.
+
+============================================================
+W4 — UniP core install artifact
+============================================================
+  [PASS] Core local_setup.bash exists.
+  [PASS] Package marker exists: gpd_ros_messages
+  [PASS] Package marker exists: gpd_ros
+  [PASS] Package marker exists: generate_motion_msgs
+  [PASS] Package marker exists: placeability_scoring
+  [PASS] gpd_ros executable exists: /workspace/install/lib/gpd_ros/detect_grasps
+
+============================================================
+W5 — Isaac Python import smoke tests
+============================================================
+  placeability_scoring     PASS  /workspace/install/lib/python3.11/site-packages/placeability_scoring/__init__.py
+  gpd_ros_messages         PASS  /workspace/install/lib/python3.11/site-packages/gpd_ros_messages/__init__.py
+  rclpy                    PASS  /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/rclpy/__init__.py
+  sensor_msgs              PASS  /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/sensor_msgs/__init__.py
+  sensor_msgs_py           PASS  /workspace/external/unip_ros311_ws/install/lib/python3.11/site-packages/sensor_msgs_py/__init__.py
+  std_msgs                 PASS  /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/std_msgs/__init__.py
+  geometry_msgs            PASS  /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/geometry_msgs/__init__.py
+  tf2_ros                  PASS  /workspace/external/unip_ros311_ws/install/lib/python3.11/site-packages/tf2_ros/__init__.py
+  cv_bridge                PASS  /workspace/external/unip_ros311_ws/install/lib/python3.11/site-packages/cv_bridge/__init__.py
+  control_msgs             PASS  /workspace/external/unip_ros311_ws/install/lib/python3.11/site-packages/control_msgs/__init__.py
+  trajectory_msgs          PASS  /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/trajectory_msgs/__init__.py
+  builtin_interfaces       PASS  /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/lib/python3.11/site-packages/builtin_interfaces/__init__.py
+  moveit_msgs              PASS  /workspace/external/unip_ros311_ws/install/lib/python3.11/site-packages/moveit_msgs/__init__.py
+  numpy                    PASS  /isaac-sim/extscache/omni.kit.pip_archive-0.0.0+69cbf6ad.lx64.cp311/pip_prebundle/numpy/__init__.py
+  scipy                    PASS  /isaac-sim/exts/omni.pip.compute/pip_prebundle/scipy/__init__.py
+  open3d                   PASS  /isaac-sim/kit/python/lib/python3.11/site-packages/open3d/__init__.py
+  matplotlib               PASS  /isaac-sim/exts/omni.isaac.core_archive/pip_prebundle/matplotlib/__init__.py
+  pandas                   PASS  /isaac-sim/kit/python/lib/python3.11/site-packages/pandas/__init__.py
+  tqdm                     PASS  /isaac-sim/kit/python/lib/python3.11/site-packages/tqdm/__init__.py
+  klampt                   PASS  /isaac-sim/kit/python/lib/python3.11/site-packages/klampt/__init__.py
+  pyfqmr                   PASS  /isaac-sim/kit/python/lib/python3.11/site-packages/pyfqmr/__init__.py
+  shapely                  PASS  /isaac-sim/kit/python/lib/python3.11/site-packages/shapely/__init__.py
+  toppra                   PASS  /isaac-sim/kit/python/lib/python3.11/site-packages/toppra/__init__.py
+  torch                    PASS  /isaac-sim/exts/omni.isaac.ml_archive/pip_prebundle/torch/__init__.py
+  [PASS] All required Python imports passed.
+
+============================================================
+W6 — Native GPD linkage
+============================================================
+  [PASS] libgpd is discoverable.
+        	libgpd.so (libc6,x86-64) => /usr/local/lib/libgpd.so
+  [PASS] Native GPD header exists.
+
+============================================================
+Workspace Validation Summary
+============================================================
+  Failures : 0
+  Warnings : 1
+
+RESULT: PASS WITH WARNINGS

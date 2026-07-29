@@ -21,6 +21,11 @@
         "PRIVACY_CONSENT=Y"
     ],
     "containerEnv": {
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "QT_X11_NO_MITSHM": "1",
+        "OMNI_KIT_ALLOW_ROOT": "1",
+        "ACCEPT_EULA": "Y",
+        "PRIVACY_CONSENT": "Y",   
         "ROS_LOCALHOST_ONLY": "0",
         "ROS_DOMAIN_ID": "42",
         "WORKSPACE_ROOT": "/workspace",
@@ -33,6 +38,8 @@
         "CUDA_HOME": "/usr/local/cuda-12.8"
     },
     "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
+        "source=${localEnv:HOME}/ws/masterthesis-yuhangxia/isaacsim_5.1.0_ur5e,target=/workspace/assets/isaacsim_5.1.0_ur5e,type=bind",
         "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind",
         "source=unip-external,target=/workspace/external,type=volume",
         "source=unip-isaac-kit-cache,target=/isaac-sim/kit/cache,type=volume",

@@ -1,0 +1,23 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from gpd_ros_messages/msg/CloudIndexed.msg
+// generated code does not contain a copyright notice
+
+#include "gpd_ros_messages/msg/CloudSources.idl"
+#include "std_msgs/msg/Int64.idl"
+
+module gpd_ros_messages {
+  module msg {
+    @verbatim (language="comment", text=
+      "This message holds a point cloud and a list of indices into the point cloud " "\n"
+      "at which to sample grasp candidates.")
+    struct CloudIndexed {
+      @verbatim (language="comment", text=
+        "The point cloud.")
+      gpd_ros_messages::msg::CloudSources cloud_sources;
+
+      @verbatim (language="comment", text=
+        "The indices into the point cloud at which to sample grasp candidates.")
+      sequence<std_msgs::msg::Int64> indices;
+    };
+  };
+};

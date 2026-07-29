@@ -1,0 +1,147 @@
+[install_gpd.sh] ========================================
+[install_gpd.sh] Native GPD installation
+[install_gpd.sh] ========================================
+[install_gpd.sh] Repository : https://github.com/atenpas/gpd.git
+[install_gpd.sh] Revision   : 2.0.0
+[install_gpd.sh] Source     : /workspace/external/gpd
+[install_gpd.sh] Prefix     : /usr/local
+[install_gpd.sh] Existing GPD checkout found: /workspace/external/gpd
+[install_gpd.sh] Fetching tags/revisions...
+[install_gpd.sh] Requested GPD revision is already checked out: 2.0.0
+[install_gpd.sh] Configuring native GPD...
+CMake Warning (dev) at /usr/lib/x86_64-linux-gnu/cmake/pcl/Modules/FindFLANN.cmake:45 (find_package):
+  Policy CMP0144 is not set: find_package uses upper-case <PACKAGENAME>_ROOT
+  variables.  Run "cmake --help-policy CMP0144" for policy details.  Use the
+  cmake_policy command to set the policy and suppress this warning.
+
+  CMake variable FLANN_ROOT is set to:
+
+    /usr
+
+  For compatibility, find_package is ignoring the variable, but code in a
+  .cmake module might still use it.
+Call Stack (most recent call first):
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:261 (find_package)
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:306 (find_flann)
+  /usr/lib/x86_64-linux-gnu/cmake/pcl/PCLConfig.cmake:570 (find_external_library)
+  CMakeLists.txt:10 (find_package)
+This warning is for project developers.  Use -Wno-dev to suppress it.
+
+-- Found flann version 1.9.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Could NOT find Pcap (missing: PCAP_LIBRARIES PCAP_INCLUDE_DIRS) 
+** WARNING ** io features related to pcap will be disabled
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- OpenNI2 found (version: 2.2.0.33, include: /usr/include/openni2, lib: /usr/lib/x86_64-linux-gnu/libOpenNI2.so;libusb::libusb)
+-- Found Qhull version 8.0.2
+-- OpenNI found (version: 1.5.4.0, include: /usr/include/ni, lib: /usr/lib/libOpenNI.so;libusb::libusb)
+-- looking for PCL_COMMON
+-- looking for PCL_KDTREE
+-- looking for PCL_OCTREE
+-- looking for PCL_SEARCH
+-- looking for PCL_SAMPLE_CONSENSUS
+-- looking for PCL_FILTERS
+-- looking for PCL_2D
+-- looking for PCL_GEOMETRY
+-- looking for PCL_IO
+-- looking for PCL_FEATURES
+-- looking for PCL_ML
+-- looking for PCL_SEGMENTATION
+-- looking for PCL_VISUALIZATION
+-- looking for PCL_SURFACE
+-- looking for PCL_REGISTRATION
+-- looking for PCL_KEYPOINTS
+-- looking for PCL_TRACKING
+-- looking for PCL_RECOGNITION
+-- looking for PCL_STEREO
+-- looking for PCL_APPS
+-- looking for PCL_IN_HAND_SCANNER
+-- looking for PCL_MODELER
+-- looking for PCL_POINT_CLOUD_EDITOR
+-- looking for PCL_OUTOFCORE
+-- looking for PCL_PEOPLE
+-- Configuring done (1.5s)
+-- Generating done (0.1s)
+-- Build files have been written to: /workspace/external/gpd/build
+[install_gpd.sh] Building native GPD with 12 job(s)...
+[  3%] Built target gpd_config_file
+[  6%] Built target gpd_local_frame
+[  9%] Built target gpd_conv_layer
+[ 12%] Built target gpd_finger_hand
+[ 15%] Built target gpd_eigen_utils
+[ 18%] Built target gpd_dense_layer
+[ 24%] Built target gpd_hand_geometry
+[ 24%] Built target gpd_image_geometry
+[ 27%] Built target gpd_hand
+[ 30%] Built target gpd_point_list
+[ 35%] Built target gpd_classifier
+[ 38%] Built target gpd_cloud
+[ 41%] Built target gpd_clustering
+[ 44%] Built target gpd_antipodal
+[ 47%] Built target gpd_frame_estimator
+[ 50%] Built target gpd_hand_set
+[ 53%] Built target gpd_image_15_channels_strategy
+[ 56%] Built target gpd_plot
+[ 60%] Built target gpd_image_12_channels_strategy
+[ 63%] Built target gpd_hand_search
+[ 66%] Built target gpd_image_3_channels_strategy
+[ 69%] Built target gpd_image_1_channels_strategy
+[ 72%] Built target gpd_candidates_generator
+[ 75%] Built target gpd_image_strategy
+[ 78%] Built target gpd_generate_candidates
+[ 81%] Built target gpd_image_generator
+[ 87%] Built target gpd_test_grasp_image
+[ 87%] Built target gpd_grasp_detector
+[ 95%] Built target gpd_sequential_importance_sampling
+[ 96%] Built target gpd_detect_grasps
+[ 95%] Built target gpd_label_grasps
+[100%] Built target gpd_cem_detect_grasps
+[install_gpd.sh] Installing native GPD to: /usr/local
+-- Install configuration: "Debug"
+-- Installing: /usr/local/lib/libgpd.so
+-- Installing: /usr/local/include/gpd
+-- Installing: /usr/local/include/gpd/data_generator.h
+-- Installing: /usr/local/include/gpd/util
+-- Installing: /usr/local/include/gpd/util/eigen_utils.h
+-- Installing: /usr/local/include/gpd/util/point_list.h
+-- Installing: /usr/local/include/gpd/util/plot.h
+-- Installing: /usr/local/include/gpd/util/cloud.h
+-- Installing: /usr/local/include/gpd/util/config_file.h
+-- Installing: /usr/local/include/gpd/sequential_importance_sampling.h
+-- Installing: /usr/local/include/gpd/candidate
+-- Installing: /usr/local/include/gpd/candidate/frame_estimator.h
+-- Installing: /usr/local/include/gpd/candidate/hand_set.h
+-- Installing: /usr/local/include/gpd/candidate/hand_search.h
+-- Installing: /usr/local/include/gpd/candidate/finger_hand.h
+-- Installing: /usr/local/include/gpd/candidate/local_frame.h
+-- Installing: /usr/local/include/gpd/candidate/candidates_generator.h
+-- Installing: /usr/local/include/gpd/candidate/hand_geometry.h
+-- Installing: /usr/local/include/gpd/candidate/antipodal.h
+-- Installing: /usr/local/include/gpd/candidate/hand.h
+-- Installing: /usr/local/include/gpd/descriptor
+-- Installing: /usr/local/include/gpd/descriptor/image_geometry.h
+-- Installing: /usr/local/include/gpd/descriptor/image_15_channels_strategy.h
+-- Installing: /usr/local/include/gpd/descriptor/image_1_channels_strategy.h
+-- Installing: /usr/local/include/gpd/descriptor/image_generator.h
+-- Installing: /usr/local/include/gpd/descriptor/image_3_channels_strategy.h
+-- Installing: /usr/local/include/gpd/descriptor/image_strategy.h
+-- Installing: /usr/local/include/gpd/descriptor/image_12_channels_strategy.h
+-- Installing: /usr/local/include/gpd/clustering.h
+-- Installing: /usr/local/include/gpd/net
+-- Installing: /usr/local/include/gpd/net/dense_layer.h
+-- Installing: /usr/local/include/gpd/net/caffe_classifier.h
+-- Installing: /usr/local/include/gpd/net/layer.h
+-- Installing: /usr/local/include/gpd/net/eigen_classifier.h
+-- Installing: /usr/local/include/gpd/net/classifier.h
+-- Installing: /usr/local/include/gpd/net/openvino_classifier.h.in
+-- Installing: /usr/local/include/gpd/net/conv_layer.h
+-- Installing: /usr/local/include/gpd/grasp_detector.h
+[install_gpd.sh] Verifying native GPD installation...
+[install_gpd.sh] Native GPD installation verified.
+[install_gpd.sh] Repository : https://github.com/atenpas/gpd.git
+[install_gpd.sh] Revision   : 2.0.0
+[install_gpd.sh] Commit     : 6c6f975
+[install_gpd.sh] Source     : /workspace/external/gpd
+[install_gpd.sh] Prefix     : /usr/local
+[install_gpd.sh] PASS: native GPD installation completed.
