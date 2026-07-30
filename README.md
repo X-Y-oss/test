@@ -20,4 +20,4 @@ bash environment/setup_and_validate.sh
 
 For detailed installation instructions, validation steps and troubleshooting, see
 
-[UniP Environment Setup](environment/README.md)
+[UniP Environment Setup](/unip/environment/README.md)
