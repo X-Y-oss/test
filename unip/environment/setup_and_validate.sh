@@ -370,6 +370,10 @@ main() {
             "SETUP" \
             "${SCRIPT_DIR}/install_ros_jazzy_py311.sh"
 
+        run_step \
+            "Boost.Python 1.83 for Python 3.11" \
+            "$ENV_DIR/install_boost_python311.sh"
+
         run_required_stage \
             "UniP ROS311 overlay install" \
             "BUILD" \

@@ -66,3 +66,36 @@ fi
 
 echo "[PASS] No /opt/ros/jazzy in AMENT_PREFIX_PATH"
 echo "[PASS] UniP ROS311 overlay validation completed."
+
+
+BOOST_PYTHON_LIB="/usr/local/lib/libboost_python311.so.1.83.0"
+
+[[ -f "$BOOST_PYTHON_LIB" ]] || {
+    echo "ERROR: missing $BOOST_PYTHON_LIB" >&2
+    exit 1
+}
+
+CV_BRIDGE_SO="$(find \
+  /workspace/external/unip_ros311_ws/install \
+  -name 'cv_bridge_boost*.so' \
+  | head -n 1)"
+
+[[ -n "$CV_BRIDGE_SO" ]] || {
+    echo "ERROR: cv_bridge_boost.so not found" >&2
+    exit 1
+}
+
+if ldd "$CV_BRIDGE_SO" | grep -q 'not found'; then
+    echo "ERROR: unresolved cv_bridge native dependencies" >&2
+    ldd "$CV_BRIDGE_SO"
+    exit 1
+fi
+
+/isaac-sim/python.sh - <<'PY'
+from cv_bridge.boost.cv_bridge_boost import getCvType
+
+assert getCvType("rgb8") >= 0
+assert getCvType("32FC1") >= 0
+
+print("cv_bridge native extension: PASS")
+PY
