@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="steve_robot">
+    <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
+
+    <!-- Import steve_robot urdf file -->
+    <xacro:include filename="ur5e_camera_test.urdf" />
+    <!-- <xacro:include filename="$(find steve_description)/urdf/steve_new_gripper.urdf" /> -->
+
+    <!-- Import control_xacro -->
+    <xacro:include filename="steve_robot.ros2_control.xacro" />
+
+
+    <xacro:steve_robot_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
+
+</robot>

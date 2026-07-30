@@ -1,0 +1,11 @@
+# ROS 2 / colcon generated artifacts
+build/
+install/
+log/
+
+# Historical build snapshots
+install_before_fresh_test/
+logs_before_fresh_test/
+
+# Runtime logs
+environment/logs/

@@ -1,3 +1,0 @@
-/workspace/environment/install_curobo.sh: line 15: ${
-    CUROBO_REQUIREMENTS:-${WORKSPACE_ROOT}/requirements/curobo.txt
-}: bad substitution

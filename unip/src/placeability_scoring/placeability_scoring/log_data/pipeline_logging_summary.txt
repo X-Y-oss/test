@@ -1,0 +1,43 @@
+UP4_Pipeline_curobo.py
+
+__init__:
+1. number_of_poses_sampled
+2. total_time
+3. object
+
+investigate_grasping_area:
+1. total_grasping_area_movement_time
+2. total_grasping_area_time (total_grasping_area_time - total_grasping_area_movement_time)
+
+investigate_placing_area:
+1. total_placing_area_movement_time
+2. total_placing_area_time (total_placing_area_time - total_placing_area_movement_time)
+
+interleaving_and_validation_grasping:
+1. total_grasp_calculation_time
+2. placeability_time
+3. simplify_grasp_area_time
+3.5 = bounding_box_grasp_time (bounding_box_grasp_time - simplify_grasp_area_time)
+4. collision_checks_grasps_time
+5. reachability_map_grasping_time
+6. reasoning_time  todo: feasability check
+
+interleaving_and_validation_placing:
+1. total_placement_locations_time
+2. hand_collision_check_placing_time
+3. ablation_heuristic_time
+4. reachability_map_placing_time
+
+
+bounding_box_grasp_time
+reasoning:
+1. grasps_scored
+2. best_grasp_placements_scored
+3. reasoning_time
+
+execution:
+1. reasoning_time
+2. motion_plan_time
+3. pickandplace_movement_time
+4. reset_arm_movement_time
+

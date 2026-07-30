@@ -1,8 +1,0 @@
-[install_gpd.sh] ========================================
-[install_gpd.sh] Native GPD installation
-[install_gpd.sh] ========================================
-[install_gpd.sh] Repository : https://github.com/atenpas/gpd.git
-[install_gpd.sh] Revision   : 2.0.0
-[install_gpd.sh] Source     : /workspace/external/gpd
-[install_gpd.sh] Prefix     : /usr/local
-[install_gpd.sh] ERROR: GPD_ROOT exists but is not a Git repository: /workspace/external/gpd
