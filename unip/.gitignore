@@ -3,6 +3,8 @@ build/
 install/
 log/
 
+*__pycache__*
+
 # Historical build snapshots
 install_before_fresh_test/
 logs_before_fresh_test/
