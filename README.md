@@ -12,7 +12,7 @@ project structure unchanged.
 
 ## Quick Start
 
-Run
+Run:
 
 ```bash
 bash environment/setup_and_validate.sh
