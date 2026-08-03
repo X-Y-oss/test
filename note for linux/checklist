@@ -109,3 +109,7 @@ ssh -T git@gitlab.pearl.infomatik.tu-darmstadt.de
 git config --global user.name "Yuhang Xia"
 git config --global user.email "yuhang.xia@stud.tu-darmstadt.de"
 git config --global --list
+---------------------------------------------------------------------------------
+robot config 实际使用的是 ur5e_robotiq_2f_140.yml，而不是原配置中写的 2f_85
+
+
