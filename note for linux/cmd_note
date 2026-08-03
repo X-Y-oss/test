@@ -1,0 +1,5 @@
+/usr/local/bin/ros2 run gpd_ros detect_grasps \
+  --ros-args \
+  -p config_file:=/workspace/external/gpd/cfg/ros_eigen_params.cfg \
+  -p cloud_type:=1 \
+  -r /camera/depth_registered/points:=/cloud_stitched
