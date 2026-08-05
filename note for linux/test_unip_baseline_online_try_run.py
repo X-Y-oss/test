@@ -63,6 +63,7 @@ _original_filter_object = offline_grasp_recon_module.filter_object
 TRY_RUN_BLOCK_COUNT = 8000
 POST_MOTION_SETTLE_TIME = 2.0
 
+
 def make_try_run_reconstruction(original_cls, label: str):
     def factory(*args, **kwargs):
         original_block_count = kwargs.get("block_count")
@@ -128,18 +129,6 @@ place_recon_module.Reconstruction = make_try_run_reconstruction(
 ############################only use the first viewpoint#################
 def get_try_run_environment_config():
     cfg = copy.deepcopy(_original_get_environment_config())
-
-    cfg.setdefault("variables", {})
-    cfg["variables"]["object_area"] = [
-        0.10, 0.22,
-        0.26, 0.38,
-    ]
-
-    print(
-        "  object_area override: "
-        f"{cfg['variables']['object_area']}",
-        flush=True,
-    )
 
     cfg.setdefault("system", {})
     cfg["system"]["robot_file"] = "ur5e_robotiq_2f_140.yml"
@@ -282,20 +271,11 @@ def filter_object_with_debug(
     *args,
     **kwargs,
 ):
-    if hasattr(pointcloud, "points"):
-        points = np.asarray(pointcloud.points)
-        pointcloud_type = type(pointcloud).__name__
-    else:
-        points = np.asarray(pointcloud)
-        pointcloud_type = type(pointcloud).__name__
-
-    weights_array = np.asarray(weights)
+    points = np.asarray(pointcloud)
 
     print(
         "\n[TRY-RUN OBJECT FILTER DEBUG]"
-        f"\n  pointcloud type: {pointcloud_type}"
-        f"\n  point shape: {points.shape}"
-        f"\n  weights shape: {weights_array.shape}"
+        f"\n  input point shape: {points.shape}"
         f"\n  object_area: {object_area}"
         f"\n  table_height: {table_height}",
         flush=True,
@@ -303,53 +283,32 @@ def filter_object_with_debug(
 
     if points.ndim != 2 or points.shape[1] < 3 or len(points) == 0:
         print(
-            "  cloud is empty or malformed",
+            "  cloud min: None"
+            "\n  cloud max: None"
+            "\n  points inside object crop: 0",
             flush=True,
         )
     else:
         xyz = points[:, :3]
-
         print(
             f"  cloud min: {xyz.min(axis=0)}"
             f"\n  cloud max: {xyz.max(axis=0)}",
             flush=True,
         )
 
-        xy_mask = (
-            (xyz[:, 0] >= object_area[0])
-            & (xyz[:, 0] <= object_area[1])
-            & (xyz[:, 1] >= object_area[2])
-            & (xyz[:, 1] <= object_area[3])
-        )
-
-        object_crop_mask = (
-            xy_mask
-            & (xyz[:, 2] >= table_height)
-            & (xyz[:, 2] <= table_height + 0.4)
-        )
-
-        print(
-            f"  points inside XY object area: {int(xy_mask.sum())}"
-            f"\n  points inside full XYZ crop: "
-            f"{int(object_crop_mask.sum())}",
-            flush=True,
-        )
-
-        if xy_mask.any():
-            xy_points = xyz[xy_mask]
-
+        if object_area is not None and len(object_area) >= 4:
+            crop_mask = (
+                (xyz[:, 0] >= object_area[0])
+                & (xyz[:, 0] <= object_area[1])
+                & (xyz[:, 1] >= object_area[2])
+                & (xyz[:, 1] <= object_area[3])
+                & (xyz[:, 2] >= table_height)
+                & (xyz[:, 2] <= table_height + 0.4)
+            )
             print(
-                f"  Z range inside XY area: "
-                f"[{xy_points[:, 2].min():.6f}, "
-                f"{xy_points[:, 2].max():.6f}]",
+                f"  points inside object crop: {int(crop_mask.sum())}",
                 flush=True,
             )
-
-        np.save(
-            "/workspace/test/output/"
-            "try_run_grasp_environment_points.npy",
-            xyz,
-        )
 
     return _original_filter_object(
         pointcloud,
@@ -387,39 +346,87 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
 
         return self._joint_command_pub
 
-    def _print_post_motion_camera_tf(self):
+    def _get_camera_tf_matrix(self):
+        """Return the newest buffered world <- wrist optical-frame TF."""
         camera_frame = "wrist_camera_color_optical_frame"
+        transform = self.tf_buffer.lookup_transform(
+            "world",
+            camera_frame,
+            rclpy.time.Time(),
+            timeout=Duration(seconds=1.0),
+        )
 
-        try:
-            transform = self.tf_buffer.lookup_transform(
-                "world",
-                camera_frame,
-                rclpy.time.Time(),
-                timeout=Duration(seconds=1.0),
-            )
+        t = transform.transform.translation
+        q = transform.transform.rotation
 
-            t = transform.transform.translation
-            q = transform.transform.rotation
+        matrix = np.eye(4, dtype=float)
+        matrix[:3, :3] = R.from_quat(
+            [q.x, q.y, q.z, q.w]
+        ).as_matrix()
+        matrix[:3, 3] = [t.x, t.y, t.z]
+        return matrix
 
+    def _wait_for_fresh_camera_tf(
+        self,
+        pre_motion_tf,
+        timeout_sec=8.0,
+        translation_threshold=0.01,
+        rotation_threshold=0.05,
+    ):
+        """Wait until the buffered wrist-camera TF differs from pre-motion TF."""
+        print(
+            "TRY-RUN CAMERA MOTION: waiting for fresh wrist-camera TF",
+            flush=True,
+        )
+
+        deadline = time.time() + timeout_sec
+        last_tf = None
+
+        while time.time() < deadline and rclpy.ok():
+            try:
+                candidate_tf = self._get_camera_tf_matrix()
+                last_tf = candidate_tf
+
+                translation_change = np.linalg.norm(
+                    candidate_tf[:3, 3] - pre_motion_tf[:3, 3]
+                )
+                rotation_change = np.linalg.norm(
+                    candidate_tf[:3, :3] - pre_motion_tf[:3, :3]
+                )
+
+                if (
+                    translation_change > translation_threshold
+                    or rotation_change > rotation_threshold
+                ):
+                    print(
+                        "\n[TRY-RUN FRESH CAMERA TF DETECTED]"
+                        f"\n  translation: {candidate_tf[:3, 3]}"
+                        f"\n  translation change: {translation_change:.6f} m"
+                        f"\n  rotation-matrix change: {rotation_change:.6f}",
+                        flush=True,
+                    )
+                    return candidate_tf
+
+            except (
+                tf2_ros.LookupException,
+                tf2_ros.ConnectivityException,
+                tf2_ros.ExtrapolationException,
+            ):
+                pass
+
+            time.sleep(0.1)
+
+        if last_tf is not None:
             print(
-                "\n[TRY-RUN POST-MOTION CAMERA TF]"
-                f"\n  frame: world <- {camera_frame}"
-                f"\n  translation: [{t.x:.6f}, {t.y:.6f}, {t.z:.6f}]"
-                f"\n  quaternion xyzw: "
-                f"[{q.x:.6f}, {q.y:.6f}, {q.z:.6f}, {q.w:.6f}]",
+                "\n[TRY-RUN CAMERA TF TIMEOUT]"
+                f"\n  last translation: {last_tf[:3, 3]}",
                 flush=True,
             )
 
-        except (
-            tf2_ros.LookupException,
-            tf2_ros.ConnectivityException,
-            tf2_ros.ExtrapolationException,
-        ) as exc:
-            print(
-                "\n[TRY-RUN POST-MOTION CAMERA TF]"
-                f"\n  unavailable: {exc}",
-                flush=True,
-            )
+        raise RuntimeError(
+            "Robot trajectory was published, but the wrist-camera TF "
+            f"did not change within {timeout_sec:.1f} seconds."
+        )
 
     def joint_motion_movements(
         self,
@@ -503,6 +510,16 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
         )
 
         publisher = self._get_joint_command_publisher()
+
+        # Record the camera TF before sending the trajectory. The next RGB-D
+        # acquisition must not start until TF reflects the moved wrist pose.
+        pre_motion_camera_tf = self._get_camera_tf_matrix()
+        print(
+            "\n[TRY-RUN PRE-MOTION CAMERA TF]"
+            f"\n  translation: {pre_motion_camera_tf[:3, 3]}",
+            flush=True,
+        )
+
         publish_period = 0.02  # 50 Hz
 
         print(
@@ -538,16 +555,41 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
             f"\n  elapsed time: {time.time() - send_start:.3f} s",
             flush=True,
         )
+        current = self.arm_mover.get_joint_state()
+
+        if hasattr(current, "position"):
+            measured = current.position
+            if hasattr(measured, "detach"):
+                measured = measured.detach().cpu().numpy()
+            measured = np.asarray(measured).reshape(-1)
+        else:
+            measured = np.asarray(current).reshape(-1)
+
+        # target = np.asarray(trajectory[-1], dtype=float).reshape(-1)
+        trajectory_np = np.asarray(first_trajectory, dtype=float)
+
+        print(
+            "\n[TRY-RUN TRAJECTORY DEBUG]"
+            f"\n  raw shape: {trajectory_np.shape}",
+            flush=True,
+        )
+
+        target = trajectory_np[-1, :].reshape(-1)
+
+        print("\n[TRY-RUN POST-MOTION JOINT CHECK]")
+        print("  target:  ", target)
+        print("  measured:", measured)
+        print("  error:   ", np.abs(target - measured))
+        print("  max error:", np.max(np.abs(target - measured)))
 
         if wait:
-            print(
-                f"TRY-RUN CAMERA MOTION: waiting "
-                f"{POST_MOTION_SETTLE_TIME:.1f} s for articulation/TF update",
-                flush=True,
+            self._wait_for_fresh_camera_tf(
+                pre_motion_camera_tf,
+                timeout_sec=8.0,
             )
-            time.sleep(POST_MOTION_SETTLE_TIME)
 
-        self._print_post_motion_camera_tf()
+            # Let at least one new RGB-D frame arrive after the TF update.
+            time.sleep(0.5)
 
         print(
             "TRY-RUN CAMERA MOTION: movement adapter returned",
@@ -663,7 +705,7 @@ def main(args=None) -> int:
             "  online perception:       True\n"
             "  recalculate grasps:      True\n"
             "  recalculate placements:  True\n"
-            "  camera-view arm motion:  enabled by original baseline\n"
+            "  camera-view arm motion:  /joint_command + TF synchronization\n"
             "  final pick/place motion: disabled\n"
             f"  TSDF block_count:        {TRY_RUN_BLOCK_COUNT}\n",
             flush=True,
