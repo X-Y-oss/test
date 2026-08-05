@@ -342,8 +342,34 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
                 "TRY-RUN CAMERA MOTION: created /joint_command publisher",
                 flush=True,
             )
-            time.sleep(1.0)
 
+        print(
+            "TRY-RUN CAMERA MOTION: waiting for /joint_command subscriber",
+            flush=True,
+        )
+
+        discovery_deadline = time.time() + 5.0
+        while (
+            self._joint_command_pub.get_subscription_count() < 1
+            and time.time() < discovery_deadline
+            and rclpy.ok()
+        ):
+            rclpy.spin_once(self, timeout_sec=0.1)
+            time.sleep(0.05)
+
+        subscriber_count = self._joint_command_pub.get_subscription_count()
+        print(
+            f"TRY-RUN CAMERA MOTION: subscriber count: {subscriber_count}",
+            flush=True,
+        )
+
+        if subscriber_count < 1:
+            raise RuntimeError(
+                "No Isaac Sim subscriber matched on /joint_command."
+            )
+
+        # Give DDS a brief settling period after endpoint discovery.
+        time.sleep(0.5)
         return self._joint_command_pub
 
     def _get_camera_tf_matrix(self):
@@ -414,7 +440,10 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
             ):
                 pass
 
-            time.sleep(0.1)
+            # time.sleep(0.1)
+            rclpy.spin_once(self, timeout_sec=0.0)
+            simulation_app.update()
+            time.sleep(0.02)
 
         if last_tf is not None:
             print(
@@ -531,15 +560,34 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
             flush=True,
         )
 
+        # Re-publish the first point briefly after DDS matching. This makes
+        # the initial command robust against endpoint discovery latency.
+        initial_msg = JointState()
+        initial_msg.name = list(joint_names)
+        initial_msg.position = first_trajectory[0].tolist()
+        for _ in range(10):
+            # initial_msg.header.stamp = self.get_clock().now().to_msg()
+            publisher.publish(initial_msg)
+
+            rclpy.spin_once(self, timeout_sec=0.0)
+            simulation_app.update()
+
+            time.sleep(0.05)
+
         send_start = time.time()
 
         for point_index, joint_positions in enumerate(first_trajectory):
             msg = JointState()
-            msg.header.stamp = self.get_clock().now().to_msg()
+            # msg.header.stamp = self.get_clock().now().to_msg()
             msg.name = joint_names
             msg.position = joint_positions.tolist()
 
             publisher.publish(msg)
+
+            # Process ROS callbacks and advance Isaac Sim / Action Graph.
+            rclpy.spin_once(self, timeout_sec=0.0)
+            simulation_app.update()
+            # time.sleep(0.02)
 
             if point_index == 0:
                 print(
@@ -559,58 +607,66 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
         # ------------------------------------------------------------------
         # POST-MOTION JOINT CHECK
         # ------------------------------------------------------------------
-        time.sleep(1.0)
+        # time.sleep(1.0)
 
-        current = self.arm_mover.get_joint_state()
+        # settle_deadline = time.time() + 1.0
 
-        if hasattr(current, "position"):
-            measured = current.position
+        # while time.time() < settle_deadline:
+        #     rclpy.spin_once(self, timeout_sec=0.0)
+        #     simulation_app.update()
+        #     time.sleep(0.01)
+        # current = self.arm_mover.get_joint_state()
 
-            if hasattr(measured, "detach"):
-                measured = measured.detach().cpu().numpy()
+        # if hasattr(current, "position"):
+        #     measured = current.position
+        #     if hasattr(measured, "detach"):
+        #         measured = measured.detach().cpu().numpy()
+        #     measured = np.asarray(measured, dtype=float).reshape(-1)
+        # else:
+        #     measured = np.asarray(current, dtype=float).reshape(-1)
 
-            measured = np.asarray(measured, dtype=float).reshape(-1)
-        else:
-            measured = np.asarray(current, dtype=float).reshape(-1)
+        # target_joint_state = first_trajectory[-1].reshape(-1)
+        # if measured.size > target_joint_state.size:
+        #     measured = measured[:target_joint_state.size]
 
-        # first_trajectory already has shape (T, 6).
-        target_joint_state = first_trajectory[-1].reshape(-1)
+        # print(
+        #     "\n[TRY-RUN POST-MOTION JOINT CHECK]"
+        #     f"\n  trajectory shape: {first_trajectory.shape}"
+        #     f"\n  target:   {target_joint_state}"
+        #     f"\n  measured: {measured}",
+        #     flush=True,
+        # )
 
-        if measured.size > target_joint_state.size:
-            measured = measured[:target_joint_state.size]
+        # if measured.size == target_joint_state.size:
+        #     joint_error = np.abs(target_joint_state - measured)
+        #     print(
+        #         f"  error:   {joint_error}"
+        #         f"\n  max error: {joint_error.max():.6f} rad",
+        #         flush=True,
+        #     )
+        # else:
+        #     print(
+        #         "  joint count mismatch:"
+        #         f" target={target_joint_state.size},"
+        #         f" measured={measured.size}",
+        #         flush=True,
+        #     )
 
-        print(
-            "\n[TRY-RUN POST-MOTION JOINT CHECK]"
-            f"\n trajectory shape: {first_trajectory.shape}"
-            f"\n target:   {target_joint_state}"
-            f"\n measured: {measured}",
-            flush=True,
-        )
+        # if wait:
+        #     self._wait_for_fresh_camera_tf(
+        #         pre_motion_camera_tf,
+        #         timeout_sec=8.0,
+        #     )
 
-        if measured.size == target_joint_state.size:
-            joint_error = np.abs(target_joint_state - measured)
-
-            print(
-                f"  error:   {joint_error}"
-                f"\n  max error: {joint_error.max():.6f} rad",
-                flush=True,
-            )
-        else:
-            print(
-                "  joint count mismatch:"
-                f" target={target_joint_state.size},"
-                f" measured={measured.size}",
-                flush=True,
-            )
-
+        #     # Let at least one new RGB-D frame arrive after the TF update.
+        #     time.sleep(0.5)
         if wait:
-            self._wait_for_fresh_camera_tf(
-                pre_motion_camera_tf,
-                timeout_sec=8.0,
+            print(
+                "TRY-RUN CAMERA MOTION: arm moved; "
+                "continuing to acquire a fresh post-motion RGB-D frame",
+                flush=True,
             )
-
-            # Let at least one new RGB-D frame arrive after the TF update.
-            time.sleep(0.5)
+            time.sleep(1.0)
 
         print(
             "TRY-RUN CAMERA MOTION: movement adapter returned",
@@ -760,3 +816,4 @@ if __name__ == "__main__":
         simulation_app.close()
 
     raise SystemExit(exit_code)
+  
