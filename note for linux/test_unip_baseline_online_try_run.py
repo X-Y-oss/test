@@ -130,6 +130,14 @@ place_recon_module.Reconstruction = make_try_run_reconstruction(
 def get_try_run_environment_config():
     cfg = copy.deepcopy(_original_get_environment_config())
 
+    cfg.setdefault("variables", {})
+    cfg["variables"]["object_area"] = [
+        0.10,
+        0.22,
+        0.26,
+        0.38,
+    ]
+
     cfg.setdefault("system", {})
     cfg["system"]["robot_file"] = "ur5e_robotiq_2f_140.yml"
 
@@ -271,11 +279,18 @@ def filter_object_with_debug(
     *args,
     **kwargs,
 ):
-    points = np.asarray(pointcloud)
+    if hasattr(pointcloud, "points"):
+        points = np.asarray(pointcloud.points)
+        pointcloud_type = type(pointcloud).__name__
+    else:
+        points = np.asarray(pointcloud)
+        pointcloud_type = type(pointcloud).__name__
 
     print(
         "\n[TRY-RUN OBJECT FILTER DEBUG]"
-        f"\n  input point shape: {points.shape}"
+        f"\n  pointcloud type: {pointcloud_type}"
+        f"\n  point shape: {points.shape}"
+        f"\n  weights shape: {np.asarray(weights).shape}"
         f"\n  object_area: {object_area}"
         f"\n  table_height: {table_height}",
         flush=True,
@@ -285,11 +300,13 @@ def filter_object_with_debug(
         print(
             "  cloud min: None"
             "\n  cloud max: None"
-            "\n  points inside object crop: 0",
+            "\n  points inside XY object area: 0"
+            "\n  points inside full XYZ crop: 0",
             flush=True,
         )
     else:
         xyz = points[:, :3]
+
         print(
             f"  cloud min: {xyz.min(axis=0)}"
             f"\n  cloud max: {xyz.max(axis=0)}",
@@ -297,16 +314,22 @@ def filter_object_with_debug(
         )
 
         if object_area is not None and len(object_area) >= 4:
-            crop_mask = (
+            xy_mask = (
                 (xyz[:, 0] >= object_area[0])
                 & (xyz[:, 0] <= object_area[1])
                 & (xyz[:, 1] >= object_area[2])
                 & (xyz[:, 1] <= object_area[3])
+            )
+
+            xyz_mask = (
+                xy_mask
                 & (xyz[:, 2] >= table_height)
                 & (xyz[:, 2] <= table_height + 0.4)
             )
+
             print(
-                f"  points inside object crop: {int(crop_mask.sum())}",
+                f"  points inside XY object area: {int(xy_mask.sum())}"
+                f"\n  points inside full XYZ crop: {int(xyz_mask.sum())}",
                 flush=True,
             )
 
@@ -816,4 +839,3 @@ if __name__ == "__main__":
         simulation_app.close()
 
     raise SystemExit(exit_code)
-  
