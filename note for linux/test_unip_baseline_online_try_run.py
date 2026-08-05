@@ -555,32 +555,53 @@ class BaselineOnlineTryRun(baseline_module.UP4_Pipeline):
             f"\n  elapsed time: {time.time() - send_start:.3f} s",
             flush=True,
         )
+
+        # ------------------------------------------------------------------
+        # POST-MOTION JOINT CHECK
+        # ------------------------------------------------------------------
+        time.sleep(1.0)
+
         current = self.arm_mover.get_joint_state()
 
         if hasattr(current, "position"):
             measured = current.position
+
             if hasattr(measured, "detach"):
                 measured = measured.detach().cpu().numpy()
-            measured = np.asarray(measured).reshape(-1)
-        else:
-            measured = np.asarray(current).reshape(-1)
 
-        # target = np.asarray(trajectory[-1], dtype=float).reshape(-1)
-        trajectory_np = np.asarray(first_trajectory, dtype=float)
+            measured = np.asarray(measured, dtype=float).reshape(-1)
+        else:
+            measured = np.asarray(current, dtype=float).reshape(-1)
+
+        # first_trajectory already has shape (T, 6).
+        target_joint_state = first_trajectory[-1].reshape(-1)
+
+        if measured.size > target_joint_state.size:
+            measured = measured[:target_joint_state.size]
 
         print(
-            "\n[TRY-RUN TRAJECTORY DEBUG]"
-            f"\n  raw shape: {trajectory_np.shape}",
+            "\n[TRY-RUN POST-MOTION JOINT CHECK]"
+            f"\n trajectory shape: {first_trajectory.shape}"
+            f"\n target:   {target_joint_state}"
+            f"\n measured: {measured}",
             flush=True,
         )
 
-        target = trajectory_np[-1, :].reshape(-1)
+        if measured.size == target_joint_state.size:
+            joint_error = np.abs(target_joint_state - measured)
 
-        print("\n[TRY-RUN POST-MOTION JOINT CHECK]")
-        print("  target:  ", target)
-        print("  measured:", measured)
-        print("  error:   ", np.abs(target - measured))
-        print("  max error:", np.max(np.abs(target - measured)))
+            print(
+                f"  error:   {joint_error}"
+                f"\n  max error: {joint_error.max():.6f} rad",
+                flush=True,
+            )
+        else:
+            print(
+                "  joint count mismatch:"
+                f" target={target_joint_state.size},"
+                f" measured={measured.size}",
+                flush=True,
+            )
 
         if wait:
             self._wait_for_fresh_camera_tf(
