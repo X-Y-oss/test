@@ -6,8 +6,8 @@ This repository provides a reproducible Isaac Sim / ROS 2 development environmen
 
 The goal is to keep the original UniP perception, placeability reasoning, and planning pipeline reproducible while providing a clean development base for the Franka migration and later thesis extensions.
 ---
-##Project Status
-###UR5e Baseline Reproduction — Frozen
+## Project Status
+### UR5e Baseline Reproduction — Frozen
 The main UniP perception-to-planning pipeline has been reproduced and validated:
 - RGB-D / TSDF reconstruction
 - GPD grasp generation
