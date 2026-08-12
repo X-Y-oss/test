@@ -25,7 +25,7 @@ scripts.
 
 - Native GPD repository: `atenpas/gpd`
 - Version/tag: `2.0.0`
-- Commit: `6c6f975`
+- Commit: `3f8d5c9`
 - Native GPD build: PASS
 - ROS message and interface build: PASS
 
@@ -59,26 +59,7 @@ After setup finishes, the following components should pass:
 
 - Isaac Sim imports
 
-...
-
----
-
-## Notes
-
-Already installed components are skipped automatically, making it safe to rerun after updates.
-
----
-
-## Current status
-
-Environment reconstruction: mostly completed
-
-Remaining work:
-
-- resolve the remaining module-interface issues
-- validate native GPD during full pipeline execution
-- run the original UR5e baseline end to end
-- begin the Franka migration after the UR5e baseline is reproducible
+Already installed components are skipped where possible, making the setup safe to rerun after updates.
 
 ---
 
