@@ -7,3 +7,7 @@
 
 /isaac-sim/python.sh \
   /workspace/test/test_unip_gpd_roundtrip.py
+
+
+/isaac-sim/python.sh \
+  /workspace/src/placeability_scoring/placeability_scoring/franka_Pipeline_curobo.py
