@@ -82,6 +82,76 @@
   - Check `IsaacSim_5.1.0_ur5e` for the existing Isaac Sim robot setup.
   - Prepare a personal code-orientation note before asking detailed technical questions.
  
+## 2026-08-27 — Phase 1 Closeout / Phase 2 Start
+
+### Current Status
+
+Phase 1 is considered sufficiently complete to move forward.
+
+The UniP baseline has been migrated from UR5e to Franka in Isaac Sim. The main
+perception-to-execution pipeline has been reintegrated and validated, including:
+
+- RGB-D / TSDF reconstruction for grasping and placing areas
+- GPD grasp generation
+- placement sampling
+- stability / PCG / clearance reasoning
+- grasp-placement collision validation
+- unified grasp-placement reasoning
+- CuRobo planning with the 7-DoF Franka
+- simulated grasp, lift, transport, and placement execution
+
+The remaining execution issues are treated as bounded robustness/configuration
+issues rather than blockers for Phase 2.
+
+### Discussion with Nils — 2026-08-26
+
+#### 1. Gripper / execution robustness
+
+Two recurring failure modes were identified during Franka testing:
+
+1. Some selected grasps are close to the object edge, and the current short
+   Franka fingers may fail to capture the object reliably.
+2. During the grasp-to-preplace transit, the larger Franka hand can approach or
+   collide with the table in configurations inherited from the UR5e baseline.
+
+Nils suggested replacing the current short fingers with the Robotiq 2F-85
+configuration. His expectation is that this should address both the insufficient
+finger reach and the hand/table clearance problem.
+
+Therefore, no further scene-specific preplace-motion workaround is planned for
+now. The 2F-85 adaptation remains a bounded follow-up task.
+
+#### 2. Physical / tactile sensing direction
+
+For the physical investigation part of the thesis, Nils recommended using a
+GelSight fingertip tactile sensor.
+
+This establishes fingertip tactile sensing as the current intended physical
+evidence channel for the later physical-investigation module.
+
+The exact sensor model, simulation representation, available raw signals,
+derived features, and sim-to-real interface still need to be investigated.
+
+#### 3. Experimental setting for physical evidence
+
+Nils plans to prepare approximately 5–6 objects for experiments.
+
+An important experimental category discussed is objects with similar or
+identical visible appearance but different hidden physical properties,
+especially different mass distributions / centers of mass.
+
+Example discussed:
+- two visually similar cereal boxes
+- one full / unopened
+- one mostly empty
+
+The visual geometry may provide little or no evidence about the difference in
+internal mass distribution, while tactile/physical interaction may reveal it.
+
+This can later provide a useful experimental setting for testing whether
+physical evidence contributes information that cannot simply be replaced by
+additional visual observations.
+ 
 # Thesis Environment Setup Notes - 24.07.2026
 
 ## corfu
