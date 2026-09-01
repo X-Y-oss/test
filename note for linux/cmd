@@ -1,0 +1,182 @@
+echo "$DISPLAY"
+xhost +si:localuser:root
+
+##new
+export ROS_DOMAIN_ID=42
+
+set +u
+
+# Isaac Sim ROS environment
+source /isaac-sim/setup_ros_env.sh
+
+# Isaac Sim Jazzy workspaces
+source /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/local_setup.bash
+source /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/isaac_sim_ros_ws/install/local_setup.bash
+
+# UniP ROS 3.11 overlay
+source /workspace/external/unip_ros311_ws/install/local_setup.bash
+
+# Main UniP workspace
+source /workspace/install/local_setup.bash
+
+set -u
+
+# Native libraries needed by UniP / GPD
+export LD_LIBRARY_PATH="/workspace/external/unip_ros311_ws/install/lib:/workspace/install/lib:/usr/local/lib:${LD_LIBRARY_PATH:-}"
+
+
+
+OMNI_KIT_ALLOW_ROOT=1 /isaac-sim/isaac-sim.sh
+
+export ROS_DOMAIN_ID=42
+export LD_LIBRARY_PATH="/workspace/external/unip_ros311_ws/install/lib:/usr/local/lib:${LD_LIBRARY_PATH:-}"
+source /isaac-sim/setup_ros_env.sh
+source /workspace/external/unip_ros311_ws/install/local_setup.bash
+source /workspace/install/local_setup.bash
+export PYTHONPATH="/workspace/external/unip_ros311_ws/install/lib/python3.11/site-packages:/workspace/install/lib/python3.11/site-packages:${PYTHONPATH:-}"
+
+
+export ISAAC_ROS_JAZZY_INSTALL="/workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install"
+
+export PYTHONPATH="${ISAAC_ROS_JAZZY_INSTALL}/lib/python3.11/site-packages:\
+/workspace/external/unip_ros311_ws/install/lib/python3.11/site-packages:\
+/workspace/install/lib/python3.11/site-packages:${PYTHONPATH:-}"
+
+export LD_LIBRARY_PATH="${ISAAC_ROS_JAZZY_INSTALL}/lib:\
+/workspace/external/unip_ros311_ws/install/lib:\
+/workspace/install/lib:\
+/usr/local/lib:${LD_LIBRARY_PATH:-}"
+
+
+
+set +u
+
+source /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/local_setup.bash
+source /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/isaac_sim_ros_ws/install/local_setup.bash
+source /workspace/external/unip_ros311_ws/install/local_setup.bash
+source /workspace/install/local_setup.bash
+
+set -u
+
+
+ros2 topic echo /joint_states --once
+ros2 topic echo /wrist_camera/camera_info --once
+ros2 topic echo /wrist_camera/depth/image_raw --once
+ros2 topic echo /wrist_camera/color/image_raw --once
+ros2 topic echo /tf --once
+
+
+
+export ROS_DOMAIN_ID=42
+/isaac-sim/python.sh \
+  /workspace/test/test_online_perception.py
+
+
+colcon build \
+  --paths /workspace/src/placeability_scoring \
+  --symlink-install \
+  --merge-install
+
+##############sometimes the colcon build doesn't work, directly use:#####################################
+bash /workspace/environment/build_unip_workspace_ros311.sh
+
+find /workspace/src   -type f   -name 'XXX'   -print
+
+
+
+GPD
+export UNIP_ROS_WS=/workspace/external/unip_ros311_ws/install
+
+export LD_LIBRARY_PATH="$UNIP_ROS_WS/lib:/workspace/install/lib:/usr/local/lib:${LD_LIBRARY_PATH:-}"
+export PYTHONPATH="$UNIP_ROS_WS/lib/python3.11/site-packages:${PYTHONPATH:-}"
+export AMENT_PREFIX_PATH="/workspace/install:$UNIP_ROS_WS:${AMENT_PREFIX_PATH:-}"
+export CMAKE_PREFIX_PATH="/workspace/install:$UNIP_ROS_WS:${CMAKE_PREFIX_PATH:-}"
+
+
+export ROS_DOMAIN_ID=42
+export ROS_LOCALHOST_ONLY=0
+
+/workspace/install/lib/gpd_ros/detect_grasps \
+  --ros-args \
+  -p cloud_type:=1 \
+  -p cloud_topic:=/cloud_stitched \
+  -p config_file:=/workspace/external/gpd/cfg/ros_eigen_params.cfg
+
+
+###########set the init. pose:
+/isaac-sim/python.sh   /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/bin/ros2   topic pub --once /joint_command sensor_msgs/msg/JointState "
+name:
+- panda_joint1
+- panda_joint2
+- panda_joint3
+- panda_joint4
+- panda_joint5
+- panda_joint6
+- panda_joint7
+position:
+- 1.4
+- -0.2
+- -0.4
+- -2.2
+- 0.9
+- 2.6
+- -0.5
+"
+
+yml problem fix:  
+alias ros2='/isaac-sim/python.sh /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/bin/ros2'
+
+
+
+ros2cli:
+export ROS_DOMAIN_ID=42
+export ROS_LOCALHOST_ONLY=0
+
+set +u
+
+source \
+  /workspace/external/IsaacSim-ros_workspaces/build_ws/jazzy/jazzy_ws/install/local_setup.bash
+
+source \
+  /workspace/external/unip_ros311_ws/install/local_setup.bash
+
+source \
+  /workspace/install/local_setup.bash
+
+set -u
+
+
+
+
+#################check the images from camera
+/isaac-sim/python.sh - <<'PY'
+from pathlib import Path
+import numpy as np
+from PIL import Image
+
+root = Path(
+    "/workspace/src/placeability_scoring/"
+    "placeability_scoring/test_data/lower_shelf/ours/drill_1"
+)
+
+for p in sorted(root.glob("*.npy")):
+    if "rgb" not in p.name.lower():
+        continue
+
+    arr = np.load(p)
+    print(p.name, arr.shape, arr.dtype, arr.min(), arr.max())
+
+    if arr.dtype != np.uint8:
+        if arr.max() <= 1.0:
+            arr = (np.clip(arr, 0, 1) * 255).astype(np.uint8)
+        else:
+            arr = np.clip(arr, 0, 255).astype(np.uint8)
+
+    if arr.ndim == 3 and arr.shape[-1] == 4:
+        arr = arr[..., :3]
+
+    out = p.with_suffix(".png")
+    Image.fromarray(arr).save(out)
+    print("saved:", out)
+PY
+  
