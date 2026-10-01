@@ -6,3 +6,8 @@ from placeability_scoring.planning.UR5e_Interface_curobo import (
     transform_to_curobo_pose,
 )
 but the transform_to_curobo_pose actually from the placeability_scoring.planning.UR5e_Interface_curobo
+
+2. Known issue:
+The highest-ranked grasp candidate is consistently feasible and supports
+successful E2E execution, while many subsequent GPD candidates are rejected
+by CuRobo at the exact-grasp stage with IK_FAIL / no reachable grasp.
