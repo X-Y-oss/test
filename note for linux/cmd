@@ -23,8 +23,15 @@ set -u
 
 # Native libraries needed by UniP / GPD
 export LD_LIBRARY_PATH="/workspace/external/unip_ros311_ws/install/lib:/workspace/install/lib:/usr/local/lib:${LD_LIBRARY_PATH:-}"
+export PYTHONPATH=/workspace/src/placeability_scoring:$PYTHONPATH
 
 
+cd /workspace
+
+/isaac-sim/python.sh \
+  test/test_gelsight_runtime_interface.py \
+  --headless \
+  2>&1 | tee /tmp/gelsight_raw_depth.log
 
 OMNI_KIT_ALLOW_ROOT=1 /isaac-sim/isaac-sim.sh
 
@@ -91,7 +98,7 @@ export LD_LIBRARY_PATH="$UNIP_ROS_WS/lib:/workspace/install/lib:/usr/local/lib:$
 export PYTHONPATH="$UNIP_ROS_WS/lib/python3.11/site-packages:${PYTHONPATH:-}"
 export AMENT_PREFIX_PATH="/workspace/install:$UNIP_ROS_WS:${AMENT_PREFIX_PATH:-}"
 export CMAKE_PREFIX_PATH="/workspace/install:$UNIP_ROS_WS:${CMAKE_PREFIX_PATH:-}"
-
+export OMP_NUM_THREADS=1
 
 export ROS_DOMAIN_ID=42
 export ROS_LOCALHOST_ONLY=0
@@ -180,3 +187,6 @@ for p in sorted(root.glob("*.npy")):
     print("saved:", out)
 PY
   
+
+
+
