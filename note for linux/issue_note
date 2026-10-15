@@ -11,3 +11,7 @@ but the transform_to_curobo_pose actually from the placeability_scoring.planning
 The highest-ranked grasp candidate is consistently feasible and supports
 successful E2E execution, while many subsequent GPD candidates are rejected
 by CuRobo at the exact-grasp stage with IK_FAIL / no reachable grasp.
+
+
+3. FeelAnyForce remaining issue:
+Dual-side GelSight Mini tactile sensing and FeelAnyForce inference were successfully integrated into the Franka pick-and-place pipeline. Repeated tests confirmed stable tactile acquisition and online inference. However, FeelAnyForce force magnitudes did not consistently agree with Isaac Sim rigid-body contact-force references. Consequently, force predictions remain uncalibrated and are currently used only as observational evidence, not for closed-loop control or calibrated physical reasoning.
